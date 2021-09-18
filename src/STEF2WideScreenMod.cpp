@@ -124,3 +124,60 @@ void STEF2WideScreenMod::getGameDirectory()
              << endl;
     }
 }
+
+// Provide the user with instructions to download the mod and ask for it's path.
+void STEF2WideScreenMod::getModDirectory()
+{
+    if (!assignedPathToMod)
+    {
+        bool pathIsValid(false);
+
+        // Tell the user to download the mod files.
+        cout << "Please download the required mod files from this link:" << endl
+             << "https://www.wsgf.org/f/u/contrib/dr/2439/hacks/Star_Trek_Elite_Force_II.7z" << endl
+             << endl
+             << "Once you have downloaded the archive, extract it anywhere into its own folder" << endl;
+
+        do
+        {
+            // Ask for the path to the mod directory.
+            cout << "Please provide the path to the extracted mod folder:" << endl;
+
+            getline(cin, pathToMod);
+            cout << endl;
+
+            // Check if the directory exists.
+            while (!fs::exists(pathToMod))
+            {
+                cout << "The path you provided does not exist. Please provide a valid path:" << endl;
+                getline(cin, pathToMod);
+                cout << endl;
+            }
+
+            pathIsValid = true;
+
+            // Check if the directory contains all of the files and folders.
+            if (!fs::exists(pathToMod + "//" + "EF2.exe") || !fs::exists(pathToMod + "//base//" + "gamex86.dll")) {
+                pathIsValid = false;
+                cout << "Error! The path does not contain all the mod files. Please extract the mod archive and DO NOT TOUCH ANYTHING IN IT." << endl;
+            }
+
+        } while (!pathIsValid);
+
+        assignedPathToMod = true;
+
+        // After obtaining a valid path to the mod files, store it in the dirs.ini file.
+        ofstream dirsFile("dirs.ini", ios_base::app);
+
+        if (dirsFile)
+        {
+            dirsFile << "ModDir:" << pathToMod << endl;
+            dirsFile.close();
+        }
+        else
+        {
+            cout << "Error writing mod directory to file! Please run this app with admin privileges" << endl
+                 << endl;
+        }
+    }
+}
