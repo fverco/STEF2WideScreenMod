@@ -35,9 +35,9 @@ bool STEF2WideScreenMod::detectConfigFile()
 
         if (dirsFile)
         {
-            string line("");    // Represents a single line of text in the file.
-            string dir("");     // The type of directory, such as mod or game directory.
-            string dirVal("");  // The path of the directory.
+            string line("");            // Represents a single line of text in the file.
+            string dir("");             // The type of directory, such as mod or game directory.
+            string dirVal("");          // The path of the directory.
             unsigned int posOfColon(0); // The position of the colon seperating dir and dirVal's text.
 
             while (getline(dirsFile, line)) // Read through the file.
@@ -55,7 +55,7 @@ bool STEF2WideScreenMod::detectConfigFile()
                         assignedPathToGame = true;
                     }
                 }
-                else if (dir == "ModDir")   // The current line contains the mod directory.
+                else if (dir == "ModDir") // The current line contains the mod directory.
                 {
                     // Verify that the mod is still there.
                     if (fs::exists(dirVal))
@@ -64,7 +64,7 @@ bool STEF2WideScreenMod::detectConfigFile()
                         assignedPathToMod = true;
                     }
                 }
-                else    // The current line is just giberish.
+                else // The current line is just giberish.
                 {
                     continue;
                 }
@@ -79,7 +79,8 @@ bool STEF2WideScreenMod::detectConfigFile()
         }
         else
         {
-            cout << "Error. Unable to open the dirs.ini file!" << endl << endl;
+            cout << "Error. Unable to open the dirs.ini file!" << endl
+                 << endl;
         }
     }
 
@@ -90,9 +91,9 @@ bool STEF2WideScreenMod::detectConfigFile()
 // Note: This will first check if the default value of pathToGame is correct. If it is then the user will not be asked anything.
 void STEF2WideScreenMod::getGameDirectory()
 {
-    if (!assignedPathToGame)    // If we haven't asked for the game directory from the user...
+    if (!assignedPathToGame) // If we haven't asked for the game directory from the user...
     {
-        if (!fs::exists(pathToGame + "\\EF2.exe"))    // If the default pathToGame is incorrect...
+        if (!fs::exists(pathToGame + "\\EF2.exe")) // If the default pathToGame is incorrect...
         {
             cout << "Could not find the path to the game directory." << endl;
 
@@ -157,7 +158,8 @@ void STEF2WideScreenMod::getModDirectory()
             pathIsValid = true;
 
             // Check if the directory contains all of the files and folders.
-            if (!fs::exists(pathToMod + "//" + "EF2.exe") || !fs::exists(pathToMod + "//base//" + "gamex86.dll")) {
+            if (!fs::exists(pathToMod + "//" + "EF2.exe") || !fs::exists(pathToMod + "//base//" + "gamex86.dll"))
+            {
                 pathIsValid = false;
                 cout << "Error! The path does not contain all the mod files. Please extract the mod archive and DO NOT TOUCH ANYTHING IN IT." << endl;
             }
@@ -179,5 +181,43 @@ void STEF2WideScreenMod::getModDirectory()
             cout << "Error writing mod directory to file! Please run this app with admin privileges" << endl
                  << endl;
         }
+    }
+}
+
+// Gets the preferred resolution from the user.
+void STEF2WideScreenMod::getPreferredResolution()
+{
+    // Only execute this function if both the game and mod directories are known.
+    if (assignedPathToGame && assignedPathToMod)
+    {
+        string input("");
+
+        // Ask the user what resolution they want.
+        cout << "Which resolution would you like your game to have?" << endl;
+
+        // Print the resolution options.
+        for (int i(0); i < resolutionList.size(); ++i)
+        {
+            cout << "[" + to_string(i + 1) + "] - " + resolutionList.at(i) << endl;
+        }
+
+        int resolutionNum(0);
+
+        do
+        {
+            // Get the user's choice.
+            cout << endl
+                 << "Type the number of the resolution you want: ";
+            cin >> input;
+            resolutionNum = stoi(input);
+
+        } while (resolutionNum < 1 || resolutionNum > resolutionList.size());
+
+        preferredResolution = resolutionList.at(resolutionNum - 1);
+
+        // Repeat the selected resolution to the user.
+        cout << endl
+             << "Your resolution: " << preferredResolution << endl
+             << endl;
     }
 }
