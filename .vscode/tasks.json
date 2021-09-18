@@ -1,0 +1,33 @@
+{
+	"version": "2.0.0",
+	"windows": {
+		"options": {
+		  "shell": {
+			"executable": "cmd.exe",
+			"args": [
+			  "/C",
+			  // The path to VsDevCmd.bat depends on the version of Visual Studio you have installed.
+			  "\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/Tools/VsDevCmd.bat\"",
+			  "&&"
+			]
+		  }
+		}
+	  },
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "C/C++: MSVC",
+			"command": "cl.exe",
+			"args": [
+			  "/std:c++latest",
+			  "/Zi",
+			  "/EHsc",
+			  "/Fe:",
+			  "${workspaceFolder}\\compiled\\STEF2WideScreenMod.exe",
+			  "${workspaceFolder}\\src\\*.cpp",
+			],
+			"problemMatcher": ["$msCompile"],
+			"group": "build"
+		  }
+	]
+}
