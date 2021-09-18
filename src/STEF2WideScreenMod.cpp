@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <iostream>
 #include <winbase.h>
+#include <lmcons.h>
 #include <fstream>
 #include <filesystem>
 
@@ -221,6 +222,22 @@ void STEF2WideScreenMod::getPreferredResolution()
              << "Your resolution: " << preferredResolution << endl
              << endl;
     }
+}
+
+// Get the user's Windows username.
+// This is used to find the right .cfg file to modify.
+bool STEF2WideScreenMod::getWinUserName()
+{
+    char username[UNLEN+1];
+	DWORD usernameLen = UNLEN+1;
+
+    if (GetUserNameA(username, &usernameLen)) {
+        winUserName = username;
+        retrievedWinUserName = true;
+        return true;
+    }
+
+    return false;
 }
 
 // Check for old files from the last time the user applied the mod.

@@ -13,7 +13,7 @@ public:
     void getGameDirectory();
     void getModDirectory();
     void getPreferredResolution();
-    void getWinUserName();
+    bool getWinUserName();
     bool detectOldFiles();
     void applyMod(const bool &backupFiles = true);
     void revertMod();
