@@ -26,42 +26,45 @@ STEF2WideScreenMod::STEF2WideScreenMod() : pathToGame("C:\\Program Files (x86)\\
                                            assignedPathToMod(false),
                                            detectedOldFiles(false){};
 
+// Checks if a dir.ini file exists and reads from it.
 bool STEF2WideScreenMod::detectConfigFile()
 {
-    if (fs::exists("dirs.ini"))
+    if (fs::exists("dirs.ini")) // If the dir.ini file exists read from it.
     {
         ifstream dirsFile("dirs.ini");
 
         if (dirsFile)
         {
-            string line("");
-            string dir("");
-            string dirVal("");
-            unsigned int posOfColon(0);
+            string line("");    // Represents a single line of text in the file.
+            string dir("");     // The type of directory, such as mod or game directory.
+            string dirVal("");  // The path of the directory.
+            unsigned int posOfColon(0); // The position of the colon seperating dir and dirVal's text.
 
-            while (getline(dirsFile, line))
+            while (getline(dirsFile, line)) // Read through the file.
             {
                 posOfColon = line.find_first_of(':');
                 dir = line.substr(0, posOfColon);
                 dirVal = line.substr(posOfColon + 1, line.length() - posOfColon + 1);
 
-                if (dir == "GameDir")
+                if (dir == "GameDir") // The current line contains the game directory.
                 {
+                    // Verify that the game is actually there.
                     if (fs::exists(dirVal + "\\EF2.exe"))
                     {
                         pathToGame = dirVal;
                         assignedPathToGame = true;
                     }
                 }
-                else if (dir == "ModDir")
+                else if (dir == "ModDir")   // The current line contains the mod directory.
                 {
+                    // Verify that the mod is still there.
                     if (fs::exists(dirVal))
                     {
                         pathToMod = dirVal;
                         assignedPathToMod = true;
                     }
                 }
-                else
+                else    // The current line is just giberish.
                 {
                     continue;
                 }

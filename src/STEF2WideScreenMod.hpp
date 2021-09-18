@@ -3,6 +3,7 @@
 
 using namespace std;
 
+// Class used to apply the wide screen mod.
 class STEF2WideScreenMod
 {
 public:
@@ -24,5 +25,5 @@ private:
     bool assignedPathToMod;
     bool detectedOldFiles;
 
-    static vector<string> resolutionList;
+    static vector<string> resolutionList; // List of recommended resolutions for the user.
 };
