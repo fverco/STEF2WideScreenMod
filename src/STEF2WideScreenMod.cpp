@@ -226,7 +226,7 @@ void STEF2WideScreenMod::getPreferredResolution()
 // Check for old files from the last time the user applied the mod.
 bool STEF2WideScreenMod::detectOldFiles()
 {
-    // Only execute this function if both the game and mod directories are known.
+    // Only execute this function if both the Windows username, game and mod directories are known.
     if (assignedPathToGame && assignedPathToMod && retrievedWinUserName)
     {
         if (fs::exists(pathToGame + "//EF2.exe.old") ||
