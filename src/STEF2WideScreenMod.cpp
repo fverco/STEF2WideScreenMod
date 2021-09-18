@@ -25,3 +25,60 @@ STEF2WideScreenMod::STEF2WideScreenMod() : pathToGame("C:\\Program Files (x86)\\
                                            assignedPathToGame(false),
                                            assignedPathToMod(false),
                                            detectedOldFiles(false){};
+
+bool STEF2WideScreenMod::detectConfigFile()
+{
+    if (fs::exists("dirs.ini"))
+    {
+        ifstream dirsFile("dirs.ini");
+
+        if (dirsFile)
+        {
+            string line("");
+            string dir("");
+            string dirVal("");
+            unsigned int posOfColon(0);
+
+            while (getline(dirsFile, line))
+            {
+                posOfColon = line.find_first_of(':');
+                dir = line.substr(0, posOfColon);
+                dirVal = line.substr(posOfColon + 1, line.length() - posOfColon + 1);
+
+                if (dir == "GameDir")
+                {
+                    if (fs::exists(dirVal + "\\EF2.exe"))
+                    {
+                        pathToGame = dirVal;
+                        assignedPathToGame = true;
+                    }
+                }
+                else if (dir == "ModDir")
+                {
+                    if (fs::exists(dirVal))
+                    {
+                        pathToMod = dirVal;
+                        assignedPathToMod = true;
+                    }
+                }
+                else
+                {
+                    continue;
+                }
+            }
+
+            dirsFile.close();
+
+            if (assignedPathToGame && assignedPathToMod)
+            {
+                return true;
+            }
+        }
+        else
+        {
+            cout << "Error. Unable to open the dirs.ini file!" << endl << endl;
+        }
+    }
+
+    return false;
+}
