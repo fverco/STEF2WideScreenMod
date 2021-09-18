@@ -24,7 +24,8 @@ STEF2WideScreenMod::STEF2WideScreenMod() : pathToGame("C:\\Program Files (x86)\\
                                            preferredResolution(""),
                                            assignedPathToGame(false),
                                            assignedPathToMod(false),
-                                           detectedOldFiles(false){};
+                                           detectedOldFiles(false),
+                                           retrievedWinUserName(false){};
 
 // Checks if a dir.ini file exists and reads from it.
 bool STEF2WideScreenMod::detectConfigFile()
@@ -226,10 +227,11 @@ void STEF2WideScreenMod::getPreferredResolution()
 bool STEF2WideScreenMod::detectOldFiles()
 {
     // Only execute this function if both the game and mod directories are known.
-    if (assignedPathToGame && assignedPathToMod)
+    if (assignedPathToGame && assignedPathToMod && retrievedWinUserName)
     {
         if (fs::exists(pathToGame + "//EF2.exe.old") ||
-            fs::exists(pathToGame + "//base//gamex86.dll.old"))
+            fs::exists(pathToGame + "//base//gamex86.dll.old") ||
+            fs::exists(pathToGame + "//base//" + winUserName + ".cfg.old"))
         {
             detectedOldFiles = true;
             return true;
