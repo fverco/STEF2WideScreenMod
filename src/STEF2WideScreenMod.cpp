@@ -85,3 +85,42 @@ bool STEF2WideScreenMod::detectConfigFile()
 
     return false;
 }
+
+// Asks for the game directory path from the user and records it.
+// Note: This will first check if the default value of pathToGame is correct. If it is then the user will not be asked anything.
+void STEF2WideScreenMod::getGameDirectory()
+{
+    if (!assignedPathToGame)    // If we haven't asked for the game directory from the user...
+    {
+        if (!fs::exists(pathToGame + "\\EF2.exe"))    // If the default pathToGame is incorrect...
+        {
+            cout << "Could not find the path to the game directory." << endl;
+
+            while (!fs::exists(pathToGame + "\\EF2.exe")) // Ask the user for the path and check if it is valid. If not, then keep asking.
+            {
+                cout << "Please provide a valid path to the game directory:" << endl;
+                getline(cin, pathToGame);
+                cout << endl;
+            }
+        }
+
+        assignedPathToGame = true;
+
+        // After obtaining a valid game directory, store it in the dirs.ini file.
+        ofstream dirsFile("dirs.ini", ios_base::app);
+
+        if (dirsFile)
+        {
+            dirsFile << "GameDir:" << pathToGame << endl;
+            dirsFile.close();
+        }
+        else
+        {
+            cout << "Error writing game directory to file! Please run this app with admin privileges" << endl
+                 << endl;
+        }
+
+        cout << "Game directory found!" << endl
+             << endl;
+    }
+}
