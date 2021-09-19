@@ -228,10 +228,11 @@ void STEF2WideScreenMod::getPreferredResolution()
 // This is used to find the right .cfg file to modify.
 bool STEF2WideScreenMod::getWinUserName()
 {
-    char username[UNLEN+1];
-	DWORD usernameLen = UNLEN+1;
+    char username[UNLEN + 1];
+    DWORD usernameLen = UNLEN + 1;
 
-    if (GetUserNameA(username, &usernameLen)) {
+    if (GetUserNameA(username, &usernameLen))
+    {
         winUserName = username;
         retrievedWinUserName = true;
         return true;
@@ -251,6 +252,109 @@ bool STEF2WideScreenMod::detectOldFiles()
             fs::exists(pathToGame + "//base//" + winUserName + ".cfg.old"))
         {
             detectedOldFiles = true;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// Applies the mod to the game files.
+void STEF2WideScreenMod::applyMod(const bool &backupFiles)
+{
+    // Only execute this function if both the Windows username, game and mod directories are known.
+    if (assignedPathToGame && assignedPathToMod && retrievedWinUserName)
+    {
+        // A list of all files to mod.
+        vector<string> filesToMod({"EF2.exe",
+                                   "base//gamex86.dll"});
+        string userConfigFile("base//" + winUserName + ".cfg");
+
+        // Backup old files before modding (if required).
+        if (backupFiles)
+        {
+            for (int i(0); i < filesToMod.size(); ++i)
+            {
+                fs::rename(pathToGame + "//" + filesToMod.at(i),
+                           pathToGame + "//" + filesToMod.at(i) + ".old");
+            }
+
+            fs::rename(pathToGame + "//" + userConfigFile,
+                       pathToGame + "//" + userConfigFile + ".old");
+        }
+
+        // Copy over mod files.
+        for (int i(0); i < filesToMod.size(); ++i)
+        {
+            fs::copy(pathToMod + "//" + filesToMod.at(i),
+                     pathToGame + "//" + filesToMod.at(i),
+                     fs::copy_options::overwrite_existing);
+        }
+
+        // Write the new resolution to the user's config file.
+        if (!modConfigFile(pathToGame + "//" + userConfigFile))
+        {
+            cout << "Error writing mod directory to file! Please run this app with admin privileges" << endl
+                 << endl;
+        }
+
+        cout << "Successfully installed the mod." << endl
+             << endl;
+    }
+}
+
+// Modifies the config file to use the new resolution.
+// NOTE: This will create a temporary file before deleting the original,
+// then the temporary file will be renamed as the original.
+// NOTE2: This function does not make a backup copy, so remember to make one before calling it.
+bool STEF2WideScreenMod::modConfigFile(const string &configFilePath)
+{
+    // Only execute this function if both the Windows username, game and mod directories are known.
+    if (assignedPathToGame && retrievedWinUserName)
+    {
+        ifstream configFile(configFilePath, ios_base::in);  // The user's original config file.
+        ofstream tmpConfigFile(configFilePath + ".tmp", ios_base::out); // The new config file.
+        bool rModeFound(false); // Was the "seta r_mode" line found?
+        bool customResAdded(false); // Has the two lines for custom resolution been added yet?
+
+        if (configFile && tmpConfigFile) // Check if the original and temp config files are open.
+        {
+            string line("");
+
+            // Read through every line in the original config file
+            // and write them to the temp config file.
+            // Also add the new lines to the temp config file.
+            while (getline(configFile, line))
+            {
+                if (!rModeFound && line.find_first_of("seta r_mode") != string::npos)   // If we found the line with "seta r_mode"...
+                {
+                    line = "seta r_mode \"-1\"";    // Change the line to the new "r_mode".
+                    rModeFound = true;
+                }
+                else if (rModeFound && !customResAdded) // If we have found the "r_mode" but haven't set the custom resolution...
+                {
+                    // Extract the width and height from the preferredResolution.
+                    unsigned int posOfX(preferredResolution.find_first_of('x'));
+                    string width(preferredResolution.substr(0, posOfX));
+                    string height(preferredResolution.substr(posOfX + 1, preferredResolution.length() - posOfX + 1));
+
+                    // Add two new lines to assign the preferresResolution.
+                    tmpConfigFile << "seta r_customwidth \"" + width +  "\"" << endl
+                                  << "seta r_customheight \"" + height + "\"" << endl;
+                    customResAdded = true;
+                }
+
+                // Write the line from the original config file over to the temp config file.
+                tmpConfigFile << line << endl;
+            }
+
+            configFile.close();
+            tmpConfigFile.close();
+
+            // Delete the original config file and rename the temp file to be the new original.
+            fs::remove(configFilePath);
+            fs::rename(configFilePath + ".tmp", configFilePath);
+
             return true;
         }
     }

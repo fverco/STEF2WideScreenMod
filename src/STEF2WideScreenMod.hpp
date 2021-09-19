@@ -29,4 +29,6 @@ private:
     bool retrievedWinUserName;
 
     static vector<string> resolutionList; // List of recommended resolutions for the user.
+
+    bool modConfigFile(const string &configFilePath);
 };
