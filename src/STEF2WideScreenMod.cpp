@@ -328,7 +328,7 @@ bool STEF2WideScreenMod::modConfigFile(const string &configFilePath)
             // Also add the new lines to the temp config file.
             while (getline(configFile, line))
             {
-                if (!rModeFound && line.find_first_of("seta r_mode") != string::npos) // If we found the line with "seta r_mode"...
+                if (!rModeFound && line.find("seta r_mode") != string::npos) // If we found the line with "seta r_mode"...
                 {
                     line = "seta r_mode \"-1\""; // Change the line to the new "r_mode".
                     rModeFound = true;
@@ -357,7 +357,9 @@ bool STEF2WideScreenMod::modConfigFile(const string &configFilePath)
             fs::remove(configFilePath);
             fs::rename(configFilePath + ".tmp", configFilePath);
 
-            return true;
+            if (rModeFound && customResAdded) {
+                return true;
+            }
         }
     }
 
