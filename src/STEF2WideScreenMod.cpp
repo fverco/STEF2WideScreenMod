@@ -280,7 +280,7 @@ void STEF2WideScreenMod::applyMod(const bool &backupFiles)
             }
 
             fs::copy(pathToGame + "//" + userConfigFile,
-                       pathToGame + "//" + userConfigFile + ".old");
+                     pathToGame + "//" + userConfigFile + ".old");
         }
 
         // Copy over mod files.
@@ -359,6 +359,12 @@ bool STEF2WideScreenMod::modConfigFile(const string &configFilePath)
 
             return true;
         }
+    }
+
+    // Delete the temp config file if it remained.
+    if (fs::exists(configFilePath + ".tmp"))
+    {
+        fs::remove(configFilePath + ".tmp");
     }
 
     return false;
