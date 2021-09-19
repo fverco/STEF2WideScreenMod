@@ -297,9 +297,11 @@ void STEF2WideScreenMod::applyMod(const bool &backupFiles)
             cout << "Error writing mod directory to file! Please run this app with admin privileges" << endl
                  << endl;
         }
-
-        cout << "Successfully installed the mod." << endl
-             << endl;
+        else
+        {
+            cout << "Successfully installed the mod." << endl
+                 << endl;
+        }
     }
 }
 
