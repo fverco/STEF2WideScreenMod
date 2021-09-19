@@ -19,7 +19,7 @@
 			"label": "C/C++: MSVC",
 			"command": "cl.exe",
 			"args": [
-			  "/std:c++latest",
+			  "/std:c++17",
 			  "/Zi",
 			  "/EHsc",
 			  "/Fe:",
