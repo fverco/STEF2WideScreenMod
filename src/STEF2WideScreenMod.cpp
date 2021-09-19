@@ -279,7 +279,7 @@ void STEF2WideScreenMod::applyMod(const bool &backupFiles)
                            pathToGame + "//" + filesToMod.at(i) + ".old");
             }
 
-            fs::rename(pathToGame + "//" + userConfigFile,
+            fs::copy(pathToGame + "//" + userConfigFile,
                        pathToGame + "//" + userConfigFile + ".old");
         }
 
