@@ -1,8 +1,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 // Class used to apply the wide screen mod.
 class STEF2WideScreenMod
 {
@@ -19,16 +17,16 @@ public:
     void revertMod();
 
 private:
-    string pathToGame;
-    string pathToMod;
-    string preferredResolution;
-    string winUserName;
+    std::string pathToGame;
+    std::string pathToMod;
+    std::string preferredResolution;
+    std::string winUserName;
     bool assignedPathToGame;
     bool assignedPathToMod;
     bool detectedOldFiles;
     bool retrievedWinUserName;
 
-    static vector<string> resolutionList; // List of recommended resolutions for the user.
+    static std::vector<std::string> resolutionList; // List of recommended resolutions for the user.
 
-    bool modConfigFile(const string &configFilePath);
+    bool modConfigFile(const std::string &configFilePath);
 };
