@@ -312,10 +312,10 @@ bool STEF2WideScreenMod::modConfigFile(const string &configFilePath)
     // Only execute this function if both the Windows username, game and mod directories are known.
     if (assignedPathToGame && retrievedWinUserName)
     {
-        ifstream configFile(configFilePath, ios_base::in);  // The user's original config file.
+        ifstream configFile(configFilePath, ios_base::in);              // The user's original config file.
         ofstream tmpConfigFile(configFilePath + ".tmp", ios_base::out); // The new config file.
-        bool rModeFound(false); // Was the "seta r_mode" line found?
-        bool customResAdded(false); // Has the two lines for custom resolution been added yet?
+        bool rModeFound(false);                                         // Was the "seta r_mode" line found?
+        bool customResAdded(false);                                     // Has the two lines for custom resolution been added yet?
 
         if (configFile && tmpConfigFile) // Check if the original and temp config files are open.
         {
@@ -326,9 +326,9 @@ bool STEF2WideScreenMod::modConfigFile(const string &configFilePath)
             // Also add the new lines to the temp config file.
             while (getline(configFile, line))
             {
-                if (!rModeFound && line.find_first_of("seta r_mode") != string::npos)   // If we found the line with "seta r_mode"...
+                if (!rModeFound && line.find_first_of("seta r_mode") != string::npos) // If we found the line with "seta r_mode"...
                 {
-                    line = "seta r_mode \"-1\"";    // Change the line to the new "r_mode".
+                    line = "seta r_mode \"-1\""; // Change the line to the new "r_mode".
                     rModeFound = true;
                 }
                 else if (rModeFound && !customResAdded) // If we have found the "r_mode" but haven't set the custom resolution...
@@ -339,7 +339,7 @@ bool STEF2WideScreenMod::modConfigFile(const string &configFilePath)
                     string height(preferredResolution.substr(posOfX + 1, preferredResolution.length() - posOfX + 1));
 
                     // Add two new lines to assign the preferresResolution.
-                    tmpConfigFile << "seta r_customwidth \"" + width +  "\"" << endl
+                    tmpConfigFile << "seta r_customwidth \"" + width + "\"" << endl
                                   << "seta r_customheight \"" + height + "\"" << endl;
                     customResAdded = true;
                 }
@@ -360,4 +360,31 @@ bool STEF2WideScreenMod::modConfigFile(const string &configFilePath)
     }
 
     return false;
+}
+
+// Reverts the game back to before the mod was installed.
+void STEF2WideScreenMod::revertMod()
+{
+    // Only execute this function if old files were detected and both the Windows username,
+    // game and mod directories are known.
+    if (detectedOldFiles && assignedPathToGame && assignedPathToMod && retrievedWinUserName)
+    {
+        vector<string> filesToRevert({"EF2.exe",
+                                      "base//gamex86.dll",
+                                      "base//" + winUserName + ".cfg"});
+
+        for (int i(0); i < filesToRevert.size(); ++i)
+        {
+            if (fs::exists(pathToGame + "//" + filesToRevert.at(i) + ".old"))
+            {
+                fs::remove(pathToGame + "//" + filesToRevert.at(i));
+                fs::rename(pathToGame + "//" + filesToRevert.at(i) + ".old",
+                           pathToGame + "//" + filesToRevert.at(i));
+            }
+        }
+
+        cout << endl
+             << "Successfully uninstalled the mod." << endl
+             << endl;
+    }
 }
