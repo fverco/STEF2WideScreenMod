@@ -1,4 +1,4 @@
-# STEFWideScreenMod
+# STEF2WideScreenMod
 
 An application that applies the widescreen mod to Star Trek Elite Force II.
 
